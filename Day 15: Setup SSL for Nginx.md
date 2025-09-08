@@ -1,5 +1,3 @@
-Here's a clean and well-formatted **Markdown (`.md`) file** based on your provided Nginx installation and configuration steps. You can copy this content into a file named something like `nginx-setup.md` for your GitHub repo.
-
 ---
 
 ### 📄 `nginx-setup.md`
