@@ -60,7 +60,7 @@ ss -tunlp | grep :8084
       mariadb -u root -p
 ```
 
-## Task:4 Create a database named kodekloud_db10 and create a database user named kodekloud_pop identified as password TmPcZjtRQx. Further make sure this newly created user is able to perform all operation on the database you created.
+## Task:4 Create a database named kodekloud_db10 and create a database user named kodekloud_rin identified as password BruCStnMT5. Further make sure this newly created user is able to perform all operation on the database you created.
 
 
 Log in to MariaDB as root (or a privileged user):
@@ -75,10 +75,10 @@ Enter your root password when prompted.
 Create the database kodekloud_db10:
 
 ```bash
-CREATE DATABASE kodekloud_db2;
+CREATE DATABASE kodekloud_db10;
 ```
 
-Create the user kodekloud_pop with password TmPcZjtRQx:
+Create the user kodekloud_rin with password BruCStnMT5:
 
 ```bash
 CREATE USER 'kodekloud_rin'@'%' IDENTIFIED BY 'BruCStnMT5';
