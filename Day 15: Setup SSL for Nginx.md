@@ -90,6 +90,7 @@ server {
     }
 }
 ```
+comment the http block
 
 ### 8. Restart Nginx to Apply Changes
 
