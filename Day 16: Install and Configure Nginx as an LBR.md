@@ -165,3 +165,114 @@ HTTP/1.1 200 OK
 - If HTTPD is not running on port 80, update the `upstream` block accordingly (e.g., `:3003`).
 - Check `journalctl -xeu nginx.service` for troubleshooting NGINX startup issues.
 
+
+# Troubleshooting Nginx Load Balancer (LBR) Issues
+
+This document details the troubleshooting steps used to resolve an issue where the Nginx Load Balancer server (`stlb01`) was not properly distributing traffic to all backend application servers (`stapp01`, `stapp02`, `stapp03`).
+
+---
+
+## 1. Initial Verification (The False Positive)
+Running a single configuration check using `curl -I` returned a `200 OK` status, but the header revealed that Nginx itself was responding locally, rather than proxying requests:
+
+```bash
+curl -I http://stlb01:80
+```
+* **Symptom:** The `Server` header returned `nginx/1.20.1` instead of the expected backend application server header (`Apache`).
+
+---
+
+## 2. Diagnosing Backend Application Ports
+To find out why Nginx could not communicate with the backend, we inspected the active network sockets on the application servers (`stapp01`) using the socket statistics tool:
+
+```bash
+ss -tunlp | grep :80
+```
+
+* **Discovery:** The command showed that the Apache service (`httpd`) was actually listening on custom port **`8088`**, not the standard port `80`:
+  ```text
+  tcp   LISTEN 0      511   *:8088   *:*   users:(("httpd",pid=18482,fd=4)...)
+  ```
+* **Root Cause 1:** The Nginx upstream block was missing port declarations, causing it to default to port `80` where no application was listening.
+
+---
+
+## 3. Fixing the Nginx Configuration
+To correct this, the Nginx configuration file on the LBR server (`/etc/nginx/nginx.conf`) was updated to route traffic to port `8088` and to include the missing reverse proxy logic.
+
+### Broken Configuration (Default Static Server)
+The `root` directive was hijacking traffic globally, and the `location /` reverse proxy block was entirely missing:
+```nginx
+upstream backend_servers {
+    server stapp01:8088;
+    server stapp02:8088;
+    server stapp03:8088;
+}
+server {
+    listen       80;
+    server_name  stlb01;
+    root         /usr/share/nginx/html; # Overrode proxy rules
+}
+```
+
+### Fixed Configuration (Load Balancer)
+Removed the global `root` directive and added the `location /` reverse proxy container block:
+```nginx
+upstream backend_servers {
+    server stapp01:8088;
+    server stapp02:8088;
+    server stapp03:8088;
+}
+
+server {
+    listen       80;
+    listen       [::]:80;
+    server_name  stlb01;
+
+    location / {
+        proxy_pass http://backend_servers;
+        proxy_pass_header Server; # Passes backend "Apache" header to client
+    }
+
+    # System default configurations
+    include /etc/nginx/default.d/*.conf;
+    error_page 404 /404.html;
+    location = /404.html {}
+}
+```
+
+### Applying the Changes
+Validated configuration file syntax and gracefully reloaded the Nginx daemon:
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+## 4. Final Validation Loop
+To confirm that traffic was actively splitting across all three application servers, a continuous validation loop was run from the LBR server to fetch header data:
+
+```bash
+for i in {1..6}; do curl -I -s http://stlb01:80 | grep -E "HTTP/|Server:|ETag:"; echo "---"; done
+```
+
+### Output Analysis
+```text
+HTTP/1.1 200 OK
+Server: Apache/2.4.62 (CentOS Stream)
+ETag: "22-6526242c6d6e5"
+---
+HTTP/1.1 200 OK
+Server: Apache/2.4.62 (CentOS Stream)
+ETag: "22-6526242ca061b"
+---
+HTTP/1.1 200 OK
+Server: Apache/2.4.62 (CentOS Stream)
+ETag: "22-6526242cd5f46"
+---
+```
+
+* **Verification 1:** The `Server: Apache/2.4.62` line proves that Nginx is successfully proxying requests backward to the application layer.
+* **Verification 2:** The `ETag` string values strictly alternate across 3 unique variants in a continuous sequence, validating that the Round-Robin algorithm is actively balancing traffic across all three backend nodes.
+
