@@ -1,0 +1,38 @@
+
+
+## How to Increase an Existing Azure VM Disk
+1. Log in to the **Azure Portal**.
+2. Navigate to **Virtual Machines** and select your VM.
+4. Click on **Disks** under the Settings menu.  
+5. Select thhe disk you want to modify and increase the disk size
+6. Click **Save**.
+
+---
+
+## Steps to Create and Mount a New Disk
+
+### 1. Create and Attach the Disk (Azure Portal)
+* Navigate to your **Virtual Machine** in the Azure Portal.
+* Select **Disks** under the Settings section.
+* Click **+ Create and attach a new disk**.
+* Provide a **Name**, select the **Size** (e.g., 100 GB), and choose the **Storage type** (e.g., Standard SSD or Premium SSD).
+* Click **Save** to apply changes.
+
+### 2. Format and Mount the Disk (Linux VM)
+* SSH into your Linux VM.
+* List the new disk to find its identifier (usually `/dev/sdc` or similar):
+  ```bash
+  lsblk
+  ```
+* Format the disk as ext4 (replace `/dev/sdc` with your actual identifier):
+  ```bash
+  sudo mkfs -t ext4 /dev/sdc
+  ```
+* Create the target directory:
+  ```bash
+  sudo mkdir -p /mnt/devops-disk
+  ```
+* Mount the disk:
+  ```bash
+  sudo mount /dev/sdc /mnt/devops-disk
+  ```
