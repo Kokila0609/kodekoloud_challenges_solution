@@ -49,7 +49,9 @@ listen = /var/run/php-fpm/default.sock
 Locate or add security permission settings right beneath the socket path definition to ensure Nginx access:
 
 listen.owner = nginx
+
 listen.group = nginx
+
 listen.mode = 0660
 
 Save and close the editor using Ctrl + O and Ctrl + X.
