@@ -46,8 +46,7 @@ Run these commands to build the required folder structure:
 
 *   `mkdir -p /root/code/fraud-detection/{tests,configs}`
 *   `mkdir -p /root/code/fraud-detection/data/{raw,processed}`
-*   `mkdir -p /root/code/fraud-detection/{models,notebooks,src}`
-*   `mkdir -p /root/code/fraud-detection/src/{data,features,models,utils}`
+
 
 ## 2. Rename Existing Folders
 
