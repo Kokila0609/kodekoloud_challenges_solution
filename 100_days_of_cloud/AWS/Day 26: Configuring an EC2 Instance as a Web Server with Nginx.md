@@ -86,3 +86,7 @@ systemctl enable nginx
    curl http://<YOUR_PUBLIC_IP> -v
    ```
 4. You should instantly receive a **200 OK** response and see the HTML source code for the default Nginx greeting page.
+
+ref : https://medium.com/@michele-costa/aws-ec2-user-data-and-scripting-79cb155dbd59
+
+https://www.geeksforgeeks.org/devops/create-an-ec2-instance-with-ec2-user-data-script-to-launch-website/
