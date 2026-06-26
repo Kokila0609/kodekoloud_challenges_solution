@@ -83,19 +83,22 @@ cat /root/.ssh/id_rsa.pub
 Connect to **`xfusion-public-ec2`** using the AWS EC2 Instance Connect console or your existing SSH method.
 
 ### C. Append Key and Secure Permissions
-Once inside the public EC2 instance terminal, configure the root user's SSH directory:
+Once inside the public EC2 instance terminal, configure the root ec2-user's SSH directory:
 
 ```bash
-# Create the .ssh directory if it does not exist
-sudo mkdir -p /root/.ssh
+# 1. Create the .ssh directory for ec2-user if it does not exist
+sudo mkdir -p /home/ec2-user/.ssh
 
-# Open the authorized_keys file and paste your copied public key
-sudo vi /root/.ssh/authorized_keys
+# 2. Open the authorized_keys file for ec2-user and paste your public key
+sudo vi /home/ec2-user/.ssh/authorized_keys
 
-# Enforce secure ownership and file permissions
-sudo chmod 700 /root/.ssh
-sudo chmod 600 /root/.ssh/authorized_keys
-sudo chown -R root:root /root/.ssh
+# 3. Enforce secure file permissions (Loose permissions will cause SSH to reject the key)
+sudo chmod 700 /home/ec2-user/.ssh
+sudo chmod 600 /home/ec2-user/.ssh/authorized_keys
+
+# 4. CRITICAL: Change ownership back to ec2-user 
+# (If owned by root, ec2-user will be locked out of reading its own key)
+sudo chown -R ec2-user:ec2-user /home/ec2-user/.ssh
 ```
 
 ---
