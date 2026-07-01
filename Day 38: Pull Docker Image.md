@@ -47,3 +47,4 @@ REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
 busybox      local     5a93558ae921   7 weeks ago   1.53MB
 busybox      musl      5a93558ae921   7 weeks ago   1.53MB
 ```
+### ref: https://docs.docker.com/reference/cli/docker/image/tag/
