@@ -48,3 +48,8 @@ c696e63def8b   bridge    bridge    local
 51c76c88a5f0   host      host      local
 71d1a48dfd06   none      null      local
 ```
+
+
+ref: https://nidhiashtikar.medium.com/docker-network-47b35c6e0fc5
+
+https://docs.docker.com/reference/cli/docker/network/
