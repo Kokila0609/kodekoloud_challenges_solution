@@ -75,3 +75,9 @@ Applying changes     |1.00 [00:00, 1.01kfile/s]
 A       data/raw/transactions.csv
 1 file fetched and 1 file added
 ```
+
+## links:
+https://medium.com/@sthanikamsanthosh1994/version-controlling-of-ml-model-and-data-using-dvc-ee60d9f15cec
+
+https://doc.dvc.org/command-reference/pull
+
